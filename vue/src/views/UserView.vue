@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import UserTable from '@/components/UserTable.vue'
 import UserForm from '@/components/UserForm.vue'
 import { useEditStore } from '@/stores/user'
@@ -15,40 +15,12 @@ const toggleShowFormBtn = async () => {
     <UserForm v-if="addUserForm.isShown" />
   </div>
   <UserTable />
+</template> -->
+
+<script setup>
+import UserTableRt from '@/components/UserTableRt.vue'
+// import { useUserStore } from '@/stores/userRoute'
+</script>
+<template>
+  <UserTableRt />
 </template>
-<style scoped lang="scss">
-.hideForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 20px;
-
-  button {
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-  }
-
-  /* Add spacing for the form below the button */
-  > *:not(button) {
-    width: 100%;
-    max-width: 600px;
-  }
-}
-</style>

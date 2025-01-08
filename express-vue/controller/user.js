@@ -66,7 +66,7 @@ const add = async (req, res) => {
     let data = req.body;
     let validatorRules = await validatorMake(data, {
         name: "required",
-        email: "required",
+        email: "required|email",
         phone_no: "required",
         age: "required",
         gender: "required",
@@ -90,6 +90,7 @@ const add = async (req, res) => {
             });
         }
     } else {
+        console.log(validatorRules.errors.errors)
         res.send({
             status: false,
             message: validatorRules.errors,

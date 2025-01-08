@@ -3,6 +3,7 @@ import { getApi, postApi } from '@/services/api'
 import '../assets/scss/components/userForm.scss'
 import { ref, watch, computed } from 'vue'
 import { useEditStore } from '@/stores/user'
+import toast from './Toast.vue'
 const formData = ref({
   name: '',
   email: '',
@@ -108,7 +109,7 @@ const submitForm = async () => {
       console.log('Form not submitted', e)
     }
   } else {
-    alert(`Enter your details!`)
+    alert('Enter your details!')
   }
 }
 const resetForm = () => {

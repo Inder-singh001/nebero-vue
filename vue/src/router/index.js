@@ -5,6 +5,7 @@ import ListView from '../views/ListView.vue'
 import ContactView from '../views/ContactView.vue'
 import ProjectView from '../views/ProjectView.vue'
 import UserView from '@/views/UserView.vue'
+import FromView from '@/views/FromView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -37,6 +38,18 @@ const router = createRouter({
       path: '/user',
       name: 'user',
       component: UserView,
+    },
+    {
+      path: '/user/add',
+      name: 'addUser',
+      component: FromView,
+      props: true
+    },
+    {
+      path: '/user/edit/:id',
+      name: 'editUser',
+      component: FromView,
+      props: true
     },
   ],
 })

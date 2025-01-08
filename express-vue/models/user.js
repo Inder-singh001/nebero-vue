@@ -1,4 +1,4 @@
-const { user } = require("../models");
+const { user } = require("../models/index");
 const Validator = require('validatorjs');
 
 const getListing = async (req, select = {}, where = {}) => {
@@ -66,14 +66,13 @@ const getById = async (id, select = []) => {
 
 const validatorMake = async (data, rules, message) => {
     let validation = new Validator(data, rules, message);
-    let userModel = require('../models/user')
 
     Validator.registerAsync('exist', async function (value, attr, req, passes) {
 
-        let check = await userModel.getRow(
+        let check = await getRow(
             {
                 email: value
-            }
+            },
         )
         if (check) {
             passes(false, " email exists");
@@ -135,7 +134,18 @@ const foreach = (obj, callback) => {
     }
     return true;
 }
-
+const getRow = async (where, select = []) => {
+    try
+    {
+        let record = await user.findOne(where, select);
+        return record;
+    }
+    catch(error)
+    {
+        console.log(error)
+        return false;
+    }
+}
 
 module.exports = {
     getListing,
@@ -145,5 +155,6 @@ module.exports = {
     validatorMake,
     insert,
     update,
-    foreach
+    foreach,
+    getRow
 }

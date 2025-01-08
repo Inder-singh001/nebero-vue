@@ -3,10 +3,8 @@ import { getApi, postApi } from '@/services/api'
 import { watchEffect, ref } from 'vue'
 import { useEditStore } from '@/stores/user'
 import '../assets/scss/components/userForm.scss'
-import { useRouter } from 'vue-router'
 
 const editUser = useEditStore()
-const router = useRouter()
 
 const getUserDetails = async () => {
   try {
@@ -17,7 +15,6 @@ const getUserDetails = async () => {
 }
 const updateUser = async (index) => {
   editUser.enableEdit(index)
-  router.push('/user')
   console.log(editUser)
 }
 const deleteUser = async (index) => {
@@ -25,11 +22,7 @@ const deleteUser = async (index) => {
   console.log(getUser)
   getUserDetails()
 }
-// const splitDob = computed((dob) => {
-//   console.log(dob)
-//   let date = data.value.dob.split('T')[0]
-//   return date
-// })
+
 watchEffect(() => {
   getUserDetails()
 })
@@ -60,7 +53,7 @@ watchEffect(() => {
           <td>{{ user.address }}</td>
           <td>{{ user.age }}</td>
           <td>{{ user.gender }}</td>
-          <td>{{ user.dob }}</td>
+          <td>{{ user.dob ? user.dob.split('T')[0] : '' }}</td>
           <td>
             <button @click="updateUser(user._id)">Edit</button>
             <button @click="deleteUser(user._id)">Delete</button>
