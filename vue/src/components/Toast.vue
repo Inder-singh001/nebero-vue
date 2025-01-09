@@ -15,38 +15,43 @@
 <script setup>
 import { ref } from 'vue'
 
+// State variables
 const visible = ref(false)
 const message = ref('')
-const type = ref('') // 'success' | 'error' | 'info'
+const type = ref('info') // Default type: 'info', can also be 'success' or 'error'
 const position = ref({
   bottom: 20,
-  right: 20, // Default position for bottom-right
-})
+  right: 20,
+}) // Default bottom-right position
 let timer = null
 
+// Function to show the toast
 const showToast = (
-  { msg },
-  toastType = type,
+  msg,
+  toastType = 'info',
   toastPosition = { bottom: 20, right: 20 },
   duration = 3000,
 ) => {
-  message.value = String(msg)
+  message.value = msg
   type.value = toastType
   position.value = toastPosition
   visible.value = true
 
-  if (timer) clearTimeout(timer)
+  if (timer) clearTimeout(timer) // Clear any existing timers
 
+  // Auto-hide toast after the specified duration
   timer = setTimeout(() => {
     visible.value = false
   }, duration)
 }
 
+// Function to close the toast manually
 const close = () => {
   visible.value = false
   if (timer) clearTimeout(timer)
 }
 
+// Expose `showToast` for external usage
 defineExpose({
   showToast,
 })
@@ -64,18 +69,20 @@ defineExpose({
   align-items: center;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  animation: fadeIn 0.3s ease;
 }
 
 .toast.success {
-  background-color: #4caf50;
+  background-color: #4caf50; /* Green for success */
 }
 
 .toast.error {
-  background-color: #f44336;
+  background-color: #f44336; /* Red for error */
 }
 
 .toast.info {
-  background-color: #2196f3;
+  background-color: #2196f3; /* Blue for info */
 }
 
 .toast button {
@@ -88,5 +95,17 @@ defineExpose({
 
 .toast button:hover {
   color: #ddd;
+}
+
+/* Fade-in animation for the toast */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

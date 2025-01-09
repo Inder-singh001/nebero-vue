@@ -123,7 +123,7 @@ const update = async (req, res) => {
             });
         } else {
             res.send({
-                status: true,
+                status: false,
                 message: "Something went wrong",
                 data: [],
             });
@@ -141,18 +141,27 @@ const deleteUser = async (req, res) => {
 
     let resp = await userModel.remove(id);
 
-    if (resp) {
-        res.send({
-            status: true,
-            message: "Record Deleted Successfully",
-            data: resp,
-        });
-    } else {
-        res.send({
-            status: true,
-            message: "Something went wrong",
+    try {
+        if (resp) {
+            res.send({
+                status: true,
+                message: "Record Deleted Successfully",
+                data: resp,
+            });
+        } else {
+            res.send({
+                status: false,
+                message: "User Not Found",
+                data: [],
+            });
+        }
+    } catch (e) {
+        res.status(500).send({
+            status: false,
+            message: "Something went wrong", e,
             data: [],
         });
+
     }
 };
 

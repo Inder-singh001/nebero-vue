@@ -1,17 +1,20 @@
 <script setup>
-import { useUserStore } from '@/stores/userRoute'
+import { useUserStore } from '@/stores/user'
 import '../assets/scss/components/userForm.scss'
-import { watchEffect } from 'vue'
+import { watchEffect, inject } from 'vue'
 import { useRouter } from 'vue-router'
+
+const toast = inject('toast')
 
 const router = useRouter()
 const userActions = useUserStore()
 const addUserBtn = () => {
+  toast.value.showToast('Adding new User', 'info')
   userActions.disableEdit()
   if (!userActions.isEditMode) {
     router.push('/user/add')
   } else {
-    console.log('Something went Wrong!')
+    toast.value.showToast('Something went Wrong!', 'info')
   }
 }
 
@@ -19,8 +22,10 @@ const editUserBtn = (index) => {
   userActions.enableEdit()
   if (userActions.isEditMode) {
     router.push(`/user/edit/${index}`)
+    toast.value.showToast('User Edit Mode', 'info')
   } else {
     console.log('Something went Wrong')
+    toast.value.showToast('Something went Wrong', 'error')
   }
 }
 
@@ -33,9 +38,16 @@ const getUserDetail = async () => {
 }
 const deleteUser = async (index) => {
   try {
-    userActions.deleteUser(index)
+    let user = await userActions.deleteUser(index)
+    if (user) {
+      await userActions.getUsers()
+      toast.value.showToast('User Deleted Successfully', 'success')
+    } else {
+      console.log('Not deleted', e)
+      toast.value.showToast('User not deleted!', 'error')
+    }
   } catch (e) {
-    console.log('Not deleted', e)
+    console.log('Something went wrong', e)
   }
 }
 watchEffect(() => {

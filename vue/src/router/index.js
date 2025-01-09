@@ -40,16 +40,19 @@ const router = createRouter({
       component: UserView,
     },
     {
+      path: '/user/:id',
+      name: 'edit',
+      component: UserView,
+    },
+    {
       path: '/user/add',
       name: 'addUser',
       component: FromView,
-      props: true
     },
     {
       path: '/user/edit/:id',
       name: 'editUser',
       component: FromView,
-      props: true
     },
   ],
 })

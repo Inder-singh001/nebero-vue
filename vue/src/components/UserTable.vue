@@ -1,26 +1,43 @@
 <script setup>
-import { getApi, postApi } from '@/services/api'
-import { watchEffect, ref } from 'vue'
-import { useEditStore } from '@/stores/user'
+import { watchEffect, inject } from 'vue'
 import '../assets/scss/components/userForm.scss'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
-const editUser = useEditStore()
+const toast = inject('toast')
+const router = useRouter()
+const userActions = useUserStore()
 
-const getUserDetails = async () => {
-  try {
-    editUser.fetchUsers()
-  } catch (e) {
-    console.log('Error fetching data!')
+const updateUser = async (index) => {
+  userActions.enableEdit()
+  if (userActions.isEditMode) {
+    router.push(`/user/${index}`)
+    toast.value.showToast('User Edit Mode', 'info')
+  } else {
+    console.log('Something went Wrong')
+    toast.value.showToast('Something went Wrong', 'error')
   }
 }
-const updateUser = async (index) => {
-  editUser.enableEdit(index)
-  console.log(editUser)
+const getUserDetails = async () => {
+  try {
+    userActions.getUsers()
+  } catch (e) {
+    console.log('Error fetching data!', e)
+  }
 }
 const deleteUser = async (index) => {
-  let getUser = await postApi(`/user/delete/${index}`)
-  console.log(getUser)
-  getUserDetails()
+  try {
+    let user = await userActions.deleteUser(index)
+    await userActions.getUsers()
+    if (user) {
+      toast.value.showToast('User Deleted Successfully', 'success')
+    } else {
+      console.log('Not deleted', e)
+      toast.value.showToast('User not deleted!', 'error')
+    }
+  } catch (e) {
+    console.log('Something went wrong', e)
+  }
 }
 
 watchEffect(() => {
@@ -45,7 +62,7 @@ watchEffect(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in editUser.users" :key="user._id">
+        <tr v-for="(user, index) in userActions.user" :key="user._id">
           <td>{{ index }}</td>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>

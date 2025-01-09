@@ -1,7 +1,11 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import Notes from './components/Notes.vue'
 import './assets/scss/main/navbar.scss'
+import Toast from '@/components/Toast.vue'
+import { ref, provide } from 'vue'
+
+const toast = ref(null)
+provide('toast', toast)
 </script>
 
 <template>
@@ -24,6 +28,7 @@ import './assets/scss/main/navbar.scss'
       <RouterView />
     </div>
   </div>
+  <Toast ref="toast" />
 </template>
 <style scoped lang="scss">
 .content {

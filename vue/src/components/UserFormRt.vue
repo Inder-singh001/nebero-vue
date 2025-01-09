@@ -1,14 +1,12 @@
 <script setup>
-import { useUserStore } from '@/stores/userRoute'
+import { useUserStore } from '@/stores/user'
 import '../assets/scss/components/userForm.scss'
-import { reactive, ref, watch, computed } from 'vue'
+import { inject, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import Toast from './Toast.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, email, numeric, minLength } from '@vuelidate/validators'
 
-const toast = ref(null)
-
+const toast = inject('toast')
 const Id = defineProps({
   id: String,
 })
@@ -54,7 +52,6 @@ const birthDate = computed({
     return formData.value.dob ? formData.value.dob.split('T')[0] : ''
   },
   set(value) {
-    console.log(value)
     formData.value.dob = value
   },
 })
@@ -71,36 +68,31 @@ const validationRules = computed(() => {
 })
 
 const v$ = useVuelidate(validationRules, formData)
+
 const submitForm = async () => {
-  // if (
-  //   formData.value.name.trim() !== '' &&
-  //   formData.value.email.trim() !== '' &&
-  //   formData.value.address.trim() !== '' &&
-  //   formData.value.gender.trim() !== '' &&
-  //   formData.value.dob.trim() !== ''
-  // ) {
-  try {
-    const UserData = {
-      name: formData.value.name,
-      email: formData.value.email,
-      phone_no: formData.value.phone_no,
-      address: formData.value.address,
-      age: formData.value.age,
-      gender: formData.value.gender,
-      dob: formData.value.dob,
-    }
-    console.log(UserData)
-    const result = await v$.value.$validate()
-    if (result) {
+  const result = await v$.value.$validate()
+  if (result) {
+    try {
+      const UserData = {
+        name: formData.value.name,
+        email: formData.value.email,
+        phone_no: formData.value.phone_no,
+        address: formData.value.address,
+        age: formData.value.age,
+        gender: formData.value.gender,
+        dob: formData.value.dob,
+      }
       if (userActions.isEditMode) {
         const resp = await userActions.updateUser(UserData, userId)
-        toast.value.showToast(`User updated Successfully`, 'success')
-        console.log('resp', resp)
-        userActions.disableEdit()
+        if (resp) {
+          toast.value.showToast('User updated Successfully', 'success')
+          userActions.disableEdit()
+          router.push('/user')
+        } else {
+          toast.value.showToast('User Not Updated!', 'error')
+        }
       } else {
         const resp = await userActions.addUser(UserData)
-        console.log(resp)
-        console.log(resp.status)
         if (resp.status) {
           userActions.recentUser({
             name: resp.data.name,
@@ -119,24 +111,24 @@ const submitForm = async () => {
           formData.value.age = ''
           formData.value.gender = ''
           formData.value.dob = ''
+          router.push('/user')
         } else {
           toast.value.showToast('User not added!', 'error')
         }
       }
-      router.push('/user')
-    } else {
-      console.log('validationos', v$.value.name.required.$message)
+    } catch (e) {
+      toast.value.showToast('Form not submitted', 'error')
     }
-  } catch (e) {
-    console.log('Form not submitted', e)
-    toast.value.showToast('Form not submitted', 'error')
+  } else {
+    toast.value.showToast('Form Fields are empty!', 'error')
   }
-  //   } else {
-  //     toast.value.showToast('Enter your details!', 'error')
-  //   }
 }
 const resetForm = () => {
-  userActions.disableEdit()
+  if (userActions.isEditMode) {
+    toast.value.showToast('User Not Updated!', 'info')
+  } else {
+    toast.value.showToast('User Not Added!', 'info')
+  }
   formData.value = {
     name: '',
     email: '',
@@ -146,11 +138,11 @@ const resetForm = () => {
     gender: '',
     dob: '',
   }
+  userActions.disableEdit()
   router.push('/user')
 }
 </script>
 <template>
-  <Toast ref="toast" />
   <RouterLink to="/user" class="btn">
     <button type="button" @click="resetForm">Back</button>
   </RouterLink>
@@ -177,15 +169,7 @@ const resetForm = () => {
         />
         <span v-for="error in v$.phone_no.$errors" :key="error.$uid">{{ error.$message }}</span>
       </div>
-      <div class="form-group">
-        <label for="address">Address:</label>
-        <textarea
-          id="address"
-          v-model="formData.address"
-          placeholder="Enter your address"
-        ></textarea>
-        <span v-for="error in v$.address.$errors" :key="error.$uid">{{ error.$message }}</span>
-      </div>
+
       <div class="form-group">
         <label for="age">Age:</label>
         <input type="number" id="age" v-model="formData.age" placeholder="Enter your age" />
@@ -205,6 +189,15 @@ const resetForm = () => {
         <label for="dob">Date of Birth:</label>
         <input type="date" id="dob" v-model="birthDate" />
         <span v-for="error in v$.dob.$errors" :key="error.$uid">{{ error.$message }}</span>
+      </div>
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea
+          id="address"
+          v-model="formData.address"
+          placeholder="Enter your address"
+        ></textarea>
+        <span v-for="error in v$.address.$errors" :key="error.$uid">{{ error.$message }}</span>
       </div>
       <button type="submit">{{ userActions.isEditMode ? 'Update' : 'Submit' }}</button>
     </form>
