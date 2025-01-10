@@ -1,9 +1,7 @@
-import axios from 'axios';
-import Validator from 'validatorjs';
-let apiUrl = import.meta.env.VITE_API_URL;
+import { instance } from './interceptor'
 
 export let postApi = async (url, formData) => {
-    let resp = await axios.post(`${apiUrl}${url}`, formData, {
+    let resp = await instance.post(url, formData, {
         headers: {
             'Content-Type': 'application/json',
         },
@@ -14,7 +12,7 @@ export let postApi = async (url, formData) => {
 
 
 export let getApi = async (url) => {
-    let resp = await axios.get(`${apiUrl}${url}`);
+    let resp = await instance.get(url);
     if (resp) {
         let { data } = resp;
         return data;
@@ -24,7 +22,7 @@ export let getApi = async (url) => {
     }
 }
 export let deleteApi = async (url) => {
-    let resp = await axios.delete(`${apiUrl}${url}`);
+    let resp = await instance.delete(url);
     if (resp) {
         let { data } = resp;
         return data
@@ -34,7 +32,7 @@ export let deleteApi = async (url) => {
     }
 }
 export let putApi = async (url, formData) => {
-    let resp = await axios.put(`${apiUrl}${url}`, formData);
+    let resp = await instance.put(url, formData);
     if (resp) {
         let { data } = resp;
         return data
