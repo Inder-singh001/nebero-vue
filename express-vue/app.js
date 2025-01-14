@@ -5,10 +5,24 @@ const app = express();
 const port = process.env.PORT;
 const cors = require('cors')
 const routes = require('./routes/index.js');
+const {getLoginUser } = require('./models/user.js')
 
 require('./models/index.js')
 app.use(cors())
 app.use(bodyParser.json())
+
+// app.use('/', async (req, res, next) => {
+//     let user = await getLoginUser(req)
+//     if (user) {
+//         next();
+//     }
+//     else {
+//         return res.status(401).send({
+//             status: false,
+//             message: "Un-Authenticated"
+//         })
+//     }
+// })
 
 
 Object.values(routes).forEach((value) => {

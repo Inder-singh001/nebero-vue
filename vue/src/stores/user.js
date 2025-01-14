@@ -1,13 +1,66 @@
-import { deleteApi, getApi, postApi, putApi } from "@/services/api";
+import { deleteApi, getApi, postApi, putApi, setToken } from "@/services/api";
 import { defineStore } from "pinia";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
         isEditMode: false,
         isShow: false,
+        isAuthenticated: true,
         user: [],
     }),
     actions: {
+        Authenticate() {
+            this.isAuthenticated = !this.isAuthenticated
+        },
+        // async checkLogin() {
+        //     try {
+        //         const loginUser = await getApi('/')
+        //         console.log(loginUser)
+        //         if (loginUser.status) {
+        //             return loginUser;
+        //         }
+        //         else {
+        //             return loginUser
+        //         }
+        //     }
+        //     catch (e) {
+        //         console.log(e)
+        //     }
+        // },
+        async loginUser(data) {
+            try {
+                console.log(data)
+                const user = await postApi('/user/login', data)
+                console.log(user)
+                if (user.status) {
+                    setToken('authtoken', user.data.token)
+                    return user
+                }
+                else {
+                    console.log(user)
+                    return `${user.message}`
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+        },
+        async loginOutUser(data) {
+            console.log(data)
+            try {
+                const user = await postApi('/user/logout')
+                if (user.status) {
+                    return user
+                }
+                else {
+                    console.log(`${user.message}`)
+                    return `${user.message}`
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+        },
         async getUsers() {
             try {
                 const detail = await getApi('/user')
@@ -43,7 +96,7 @@ export const useUserStore = defineStore('user', {
         },
         async updateUser(updatedUser, id) {
             try {
-                const resp = await putApi(`/user/update/${id}`, updatedUser);
+                const resp = await putApi('/user/update', updatedUser);
                 console.log(resp)
                 if (resp.status) {
                     console.log(resp)

@@ -4,7 +4,7 @@ import '../assets/scss/components/userForm.scss'
 import { inject, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import useVuelidate from '@vuelidate/core'
-import { required, email, numeric, minLength } from '@vuelidate/validators'
+import { required, email, numeric, minLength, sameAs } from '@vuelidate/validators'
 
 const toast = inject('toast')
 const Id = defineProps({
@@ -20,6 +20,8 @@ let formData = ref({
   age: '',
   gender: '',
   dob: '',
+  password: '',
+  confirm_password: '',
 })
 const userActions = useUserStore()
 
@@ -42,11 +44,18 @@ watch(
         age: '',
         gender: '',
         dob: '',
+        password: '',
+        confirm_password: '',
       }
     }
   },
   { immediate: true },
 )
+
+const togglePage = () => {
+  router.push('/login')
+}
+
 const birthDate = computed({
   get() {
     return formData.value.dob ? formData.value.dob.split('T')[0] : ''
@@ -64,6 +73,8 @@ const validationRules = computed(() => {
     age: { required, numeric, minLength: minLength(2) },
     gender: { required },
     dob: { required },
+    password: { required },
+    confirm_password: { required, sameAs: sameAs(formData.value.password) },
   }
 })
 
@@ -81,6 +92,8 @@ const submitForm = async () => {
         age: formData.value.age,
         gender: formData.value.gender,
         dob: formData.value.dob,
+        password: formData.value.password,
+        confirm_password: formData.value.password,
       }
       if (userActions.isEditMode) {
         const resp = await userActions.updateUser(UserData, userId)
@@ -102,6 +115,7 @@ const submitForm = async () => {
             age: resp.data.age,
             gender: resp.data.gender,
             dob: resp.data.dob,
+            password: resp.data.password,
           })
           toast.value.showToast('User added Successfully', 'success')
           formData.value.name = ''
@@ -111,7 +125,9 @@ const submitForm = async () => {
           formData.value.age = ''
           formData.value.gender = ''
           formData.value.dob = ''
-          router.push('/user')
+          formData.value.password = ''
+          formData.value.confirm_password = ''
+          router.push('/')
         } else {
           toast.value.showToast('User not added!', 'error')
         }
@@ -137,17 +153,20 @@ const resetForm = () => {
     age: '',
     gender: '',
     dob: '',
+    password: '',
+    confirm_password: '',
   }
   userActions.disableEdit()
-  router.push('/user')
+
+  router.push('/login')
 }
 </script>
 <template>
-  <RouterLink to="/user" class="btn">
+  <!-- <RouterLink to="/user" class="btn">
     <button type="button" @click="resetForm">Back</button>
-  </RouterLink>
+  </RouterLink> -->
   <div class="user-form">
-    <h1>User Details</h1>
+    <h1>Sign-Up</h1>
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Name:</label>
@@ -199,8 +218,31 @@ const resetForm = () => {
         ></textarea>
         <span v-for="error in v$.address.$errors" :key="error.$uid">{{ error.$message }}</span>
       </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          v-model="formData.password"
+          placeholder="Enter your password"
+        />
+        <span v-for="error in v$.password.$errors" :key="error.$uid">{{ error.$message }}</span>
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password:</label>
+        <input
+          type="password"
+          id="confirm_password"
+          v-model="formData.confirm_password"
+          placeholder="Confirm password"
+        />
+        <span v-for="error in v$.confirm_password.$errors" :key="error.$uid">
+          {{ error.$message }}
+        </span>
+      </div>
       <button type="submit">{{ userActions.isEditMode ? 'Update' : 'Submit' }}</button>
     </form>
+    <p>Already have an account? <span @click="togglePage">Login</span></p>
   </div>
 </template>
 

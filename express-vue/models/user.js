@@ -1,5 +1,6 @@
 const { user } = require("../models/index");
 const Validator = require('validatorjs');
+const md5 = require('md5');
 
 const getListing = async (req, select = {}, where = {}) => {
     try {
@@ -135,9 +136,11 @@ const foreach = (obj, callback) => {
     return true;
 }
 const getRow = async (where, select = []) => {
+    console.log(where)
     try
     {
         let record = await user.findOne(where, select);
+        console.log(record)
         return record;
     }
     catch(error)
@@ -147,6 +150,67 @@ const getRow = async (where, select = []) => {
     }
 }
 
+const getBearerToken = (req) => {
+    if (
+        req &&
+        req.headers &&
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+    ) {
+        let token = req.headers.authorization.split(" ");
+        if (token && token.length > 1) {
+            return token && token[1] ? token[1].trim() : '';
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
+const getHash = (length = 32) => {
+    var result = "";
+    var characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength)
+        );
+    }
+    return result;
+}
+
+var encrypt = (string) => {
+    return md5(string);
+}
+
+const getLoginUser = async (req) => {
+    try
+    {   
+        let token = await getBearerToken(req);   
+        if(token)
+        {
+            console.log(token)
+            let record = await getRow({
+                token: token
+            });
+           console.log(record)
+            return record;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    catch(error)
+    {
+        console.log(error)
+        return false;
+    }
+}
 module.exports = {
     getListing,
     getCounts,
@@ -156,5 +220,9 @@ module.exports = {
     insert,
     update,
     foreach,
-    getRow
+    getRow,
+    getBearerToken,
+    getHash,
+    encrypt,
+    getLoginUser
 }
