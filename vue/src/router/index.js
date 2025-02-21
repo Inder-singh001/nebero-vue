@@ -91,19 +91,18 @@ const router = createRouter({
   ],
 })
 
-
-router.beforeEach((to, from, next) => {
-  const userActions = useUserStore()
-  console.log(!to.meta.auth)
-  console.log(userActions.isAuthenticated)
-  if (to.meta.auth && !userActions.isAuthenticated) {
-    next('/login')
-  }
-  else if (!to.meta.auth && userActions.isAuthenticated && (to.path === '/login' || to.path === '/signup')) {
-    next('/')
-  }
-  else
-    next()
-})
+// router.beforeEach((to, from, next) => {
+//   const userActions = useUserStore()
+//   console.log(!to.meta.auth)
+//   console.log(userActions.isAuthenticated)
+//   if (to.meta.auth && !userActions.isAuthenticated) {
+//     next('/login')
+//   }
+//   else if (!to.meta.auth && userActions.isAuthenticated) {
+//     next('/')
+//   }
+//   else
+//     next()
+// })
 
 export default router

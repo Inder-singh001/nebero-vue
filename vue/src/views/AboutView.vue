@@ -4,11 +4,11 @@
   <div class="about_page">
     <h1>About Us</h1>
     <p>
-      Welcome to Mini Projects! Our mission is to help developers learn and grow by building fun,
+      Welcome to Mini Projects! Our mission is to help developers learn and grow by building
       interactive projects. We believe in hands-on learning, and our team is here to support you on
       your coding journey.
     </p>
-    <p>Explore our projects, get inspired, and create something amazing!</p>
+    <p>&#128522; Explore our projects, get inspired, and create something amazing! 😊</p>
   </div>
 </template>
 <style scoped lang="scss">

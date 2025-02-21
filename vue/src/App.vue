@@ -39,9 +39,6 @@ const handleLogout = async () => {
           <RouterLink to="/user" class="nav_link">Users</RouterLink>
           <button class="nav_link" @click="handleLogout()">Logout</button>
         </nav>
-        <nav>
-          <RouterLink to="/login" class="nav_link">Login</RouterLink>
-        </nav>
       </header>
     </div>
   </div>

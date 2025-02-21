@@ -9,5 +9,6 @@ module.exports = {
 				additionalData: [...bootstrapSassAbstractsImports, ''].join(';\n')
 			}
 		}
-	}
+	},
+  	publicPath: process.env.NODE_ENV === 'production' ? 'nebero-vue' : '/'
 }
